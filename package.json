@@ -1,0 +1,12 @@
+{
+  "name": "@nihilist-philanthropy/cliathaire-react-generator-web-client",
+  "version": "0.0.0",
+  "description": "Isomorphic Web client generator using React.",
+  "main": "index.js",
+  "repository": "https://github.com/Temoto-kun/react-generator-web-client",
+  "author": "TheoryOfNekomata <allan.crisostomo@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "plop": "^2.1.0"
+  }
+}

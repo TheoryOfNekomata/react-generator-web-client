@@ -1,0 +1,44 @@
+[
+  {
+    "name": "getDerivedStateFromProps",
+    "instruction": "Return a derived initial state from initial props.",
+    "params": ["props", "state"],
+    "dependsOn": ["componentDidUpdate"],
+    "static": true
+  },
+  {
+    "name": "componentDidMount",
+    "instruction": "Perform actions as soon as the component is mounted in the DOM.",
+    "params": [],
+    "dependsOn": [],
+    "static": false
+  },
+  {
+    "name": "shouldComponentUpdate",
+    "instruction": "Return a boolean indicating when the component should update.",
+    "params": ["nextProps", "nextState"],
+    "dependsOn": [],
+    "static": false
+  },
+  {
+    "name": "getSnapshotBeforeUpdate",
+    "instruction": "Return an object that will serve as a snapshot for componentDidUpdate().",
+    "params": ["prevProps", "prevState"],
+    "dependsOn": ["componentDidMount"],
+    "static": false
+  },
+  {
+    "name": "componentDidCatch",
+    "instruction": "Handle component errors.",
+    "params": ["error", "info"],
+    "dependsOn": [],
+    "static": false
+  },
+  {
+    "name": "componentDidUpdate",
+    "instruction": "Perform actions as soon as the component is updated in the DOM.",
+    "params": ["prevProps", "prevState", "snapshot"],
+    "dependsOn": [],
+    "static": false
+  }
+]
