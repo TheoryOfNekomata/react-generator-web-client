@@ -1,0 +1,65 @@
+import {
+applyMiddleware,
+compose,
+createStore,
+combineReducers,
+} from 'redux'
+import { reducer, createMiddleware, createLoader } from 'redux-storage'
+import { connectRouter, routerMiddleware } from 'connected-react-router'
+import LocalForage from 'localforage'
+import filter from 'redux-storage-decorator-filter'
+
+import { isServer } from '../utilities'
+import getHistory from '../../client/history'
+
+import { STORAGE_NAME, STORAGE_STORE_NAME } from '../config'
+
+import createEngine from './engine'
+import * as modules from './modules'
+
+const ROOT_REDUCER = combineReducers(modules)
+
+const STORAGE_CONFIG = {
+driver: LocalForage.LOCALSTORAGE,
+name: STORAGE_NAME,
+storeName: STORAGE_STORE_NAME,
+}
+
+const DO_NOT_STORE_THESE_ACTION_TYPES = [
+'auth',
+]
+
+const DO_NOT_LISTEN_FOR_THESE_ACTION_TYPES = [
+'@@router/LOCATION_CHANGE',
+]
+
+function Store({ state, location } = {}) {
+if (isServer()) {
+return createStore(
+ROOT_REDUCER,
+state,
+)
+}
+
+// eslint-disable-next-line no-underscore-dangle
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const HISTORY = getHistory(location)
+const ENGINE = filter(createEngine(STORAGE_CONFIG), DO_NOT_STORE_THESE_ACTION_TYPES)
+const store = createStore(
+connectRouter(HISTORY)(reducer(ROOT_REDUCER)),
+state,
+composeEnhancers(
+applyMiddleware(
+routerMiddleware(HISTORY),
+createMiddleware(ENGINE, DO_NOT_LISTEN_FOR_THESE_ACTION_TYPES),
+),
+),
+)
+const load = createLoader(ENGINE)
+
+load(store)
+
+return store
+}
+
+export default Store

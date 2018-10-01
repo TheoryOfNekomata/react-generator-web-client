@@ -1,41 +1,50 @@
 import React from 'react'
 
-{{componentHeader name stateful}} {
-  {{#if stateful}}
-  state = {}
+{{componentHeader name methods stateful}} {
 
-  {{#each (componentSortMethods methods getDerivedStateFromProps getSnapshotBeforeUpdate)}}
-  {{componentMethodHeader this}} {
-    // TODO {{componentInstruction this}}
-  }
+{{#if (componentIsClass methods stateful)}}
 
-  {{/each}}
-  render() {
-    // TODO Specify the component's rendered template.
-    return (
-      <div>
-        {{ name }}
-      </div>
-    )
-  }
-  {{~else}}
-  return (
-    <div>
-      {{ name }}
-    </div>
-  )
-  {{~/if}}
+	{{#if stateful}}
+		state = {}
+	{{/if}}
+
+	{{#each (componentSortMethods methods getDerivedStateFromProps getSnapshotBeforeUpdate)}}
+
+		{{componentMethodHeader this}} {
+			{{componentDefaultCode this}}
+		}
+
+	{{/each}}
+
+	render() {
+		// TODO Specify the component's rendered template.
+		return (
+			<div>
+				{{ name }}
+			</div>
+		)
+	}
+
+{{else}}
+
+	return (
+		<div>
+			{{ name }}
+		</div>
+	)
+
+{{/if}}
 
 }
 
 {{ name }}.defaultProps = {
-  // TODO Specify default values for the component's props
+// TODO Specify default values for the component's props.
 }
 
 {{ name }}.propTypes = {
-  // TODO Specify all the component's props' types
+// TODO Specify all the component's props' types.
 }
 
 export {
-  {{ name }} as default
+	{{ name }} as default,
 }

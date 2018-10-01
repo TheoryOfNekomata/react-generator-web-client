@@ -1,37 +1,41 @@
+const InquirerAutocomplete = require('inquirer-autocomplete-prompt')
+
 const HELPERS = [
-    require('./plop/helpers/ComponentHeader'),
-    require('./plop/helpers/ComponentInstruction'),
-    require('./plop/helpers/ComponentMethodHeader'),
-    require('./plop/helpers/ComponentScopeDirectory'),
-    require('./plop/helpers/ComponentSortMethods'),
+	require('./plop/helpers/componentHeader'),
+	require('./plop/helpers/componentDefaultCode'),
+	require('./plop/helpers/componentIsClass'),
+	require('./plop/helpers/componentMethodHeader'),
+	require('./plop/helpers/componentSortMethods'),
 ]
 
 const ACTION_TYPES = [
-    require('./plop/actions/types/Sync'),
+	require('./plop/actions/types/Configure'),
 ]
 
 const GENERATORS = [
-    require('./plop/generators/Component'),
+	require('./plop/generators/CreateNewComponent'),
 ]
 
 function plopfile(plop) {
-    HELPERS.forEach((Helper) => {
-        const { name, helper, } = new Helper()
+	plop.setPrompt('autocomplete', InquirerAutocomplete)
 
-        plop.setHelper(name, helper)
-    })
+	HELPERS.forEach((Helper) => {
+		const { name, helper, } = new Helper()
 
-    ACTION_TYPES.forEach((ActionType) => {
-        const { name, action, } = new ActionType()
+		plop.setHelper(name, helper)
+	})
 
-        plop.setActionType(name, action)
-    })
+	ACTION_TYPES.forEach((ActionType) => {
+		const { name, action, } = new ActionType()
 
-    GENERATORS.forEach((Generator) => {
-        const { name, ...generator } = new Generator()
+		plop.setActionType(name, action)
+	})
 
-        plop.setGenerator(name, generator)
-    })
+	GENERATORS.forEach((Generator) => {
+		const { name, ...generator } = new Generator()
+
+		plop.setGenerator(name, generator)
+	})
 }
 
 module.exports = plopfile
