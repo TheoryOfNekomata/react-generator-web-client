@@ -1,10 +1,14 @@
-function getRoutes(config, namePrefix) {
-	return [
-		...(
+function getFullRouteName(route, parentRouteName) {
+	return `${parentRouteName}/routes/${route.name}`
+}
+
+function getAllRoutes(config, scope) {
+	function getRoutes(config, parentRouteName) {
+		return (
 			config.routes
 				.map((route) => {
 					const mappedRoute = route
-					const routeName = `${namePrefix}/routes/${route.name}`
+					const routeName = getFullRouteName(route, parentRouteName)
 					mappedRoute.name = routeName
 					return [
 						mappedRoute,
@@ -18,12 +22,11 @@ function getRoutes(config, namePrefix) {
 					],
 					[]
 				)
-		),
-	]
-}
+		)
+	}
 
-function getAllRoutes(config, scope) {
-	return getRoutes(config, scope) // there are no client-specific or server-specific routes, scope will always be common
+	// there are no client-specific or server-specific routes, scope will always be common
+	return getRoutes(config, scope)
 }
 
 module.exports = getAllRoutes
