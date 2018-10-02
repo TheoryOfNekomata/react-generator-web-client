@@ -1,87 +1,8 @@
 const Model = require('./Model')
 const DependentReactComponentLifecycleMethod = require('./DependentReactComponentLifecycleMethod')
 const getSafeConfig = require('../utilities/getSafeConfig')
+const getValidComponentParents = require('../utilities/getValidComponentParents')
 const LIFECYCLE_METHODS = require('../utilities/reactLifecycleMethods')
-
-function getRoutes(config, namePrefix) {
-	return [
-		...(
-			config.routes
-				.map((route) => {
-					const mappedRoute = route
-					const routeName = `${namePrefix}/${route.name}`
-					mappedRoute.name = routeName
-					return [
-						mappedRoute,
-						...(
-							route.components.map((component) => {
-								const mappedComponent = component
-								mappedComponent.name = `${routeName}/${component.name}`
-								return mappedComponent
-							})
-						),
-						...getRoutes(route, routeName),
-					]
-				})
-				.reduce(
-					(allRoutes, route) => [
-						...allRoutes,
-						...route,
-					],
-					[]
-				)
-		),
-	]
-}
-
-function getAllRoutes(answers, config) {
-	return getRoutes(config, `${answers.scope}/routes`)
-}
-
-function getComponentsWithSameScope(answers, config) {
-	const { scope: thisComponentScope, } = answers
-	return config.components
-		.filter((component) => {
-			const { scope: thatComponentScope, } = component
-			return (thisComponentScope === thatComponentScope)
-		})
-		.map((component) => {
-			const mappedComponent = component
-
-			mappedComponent.name = `${component.scope}/components/${component.name}`
-			return mappedComponent
-		})
-}
-
-function getFilteredLocations(answers, config) {
-	const { scope: thisComponentScope, } = answers
-	const componentsWithSameScope = getComponentsWithSameScope(answers, config)
-
-	if (thisComponentScope === 'common') {
-		return [
-			...componentsWithSameScope,
-			...getAllRoutes(answers, config),
-		]
-	}
-
-	return componentsWithSameScope
-}
-
-function filterLocations(answers, input) {
-	return new Promise((resolve) => {
-		getSafeConfig().then((config) => {
-			const locations = getFilteredLocations(answers, config)
-			const locationNames = locations
-				.map((location) => location.name)
-				.sort()
-
-			resolve([
-				`${answers.scope}/components`,
-				...locationNames.filter((location) => location.toLowerCase().includes(input.toLowerCase()))
-			])
-		})
-	})
-}
 
 function ReactComponent({ name, }) {
 	return [
@@ -136,19 +57,13 @@ function ReactComponent({ name, }) {
 			name: 'location',
 			type: 'autocomplete', // TODO write inquirer prompt for route based on autocomplete
 			message: `Where should this ${name} reside?`,
-			//default: 'components',
 			source(answers, input) {
-				return filterLocations(answers, input || '')
-			},
-			validate(input) {
-				if (!input.trim()) {
-					return 'Enter a valid location.'
-				}
-				const [firstFragment, ] = input.split('/')
-				if (!('components routes'.split(' ').includes(firstFragment))) {
-					return 'Location is ambiguous -- is it a component or a route?'
-				}
-				return true
+				return new Promise((resolve) => {
+					getSafeConfig()
+						.then((config) => {
+							resolve(getValidComponentParents(answers, input, config))
+						})
+				})
 			},
 		}
 	]

@@ -3,8 +3,8 @@ const prettier = require('prettier')
 
 const getConfigFilePath = require('../../../utilities/getConfigFilePath')
 const getSafeConfig = require('../../../utilities/getSafeConfig')
-const isSubComponent = require('../../../utilities/isSubComponent')
-const isScopeComponent = require('../../../utilities/isScopeComponent')
+const isSubComponent = require('../../../utilities/isSubComponentLocation')
+const isScopeComponent = require('../../../utilities/isScopeComponentLocation')
 
 function writeConfig(config) {
 	const configPath = getConfigFilePath()
@@ -24,19 +24,91 @@ function isValidDelta(delta) {
 	)
 }
 
+function addComponent(component, config, location) {
+	const locationFragments = location.split('/')
+	let deltaObjectCursor = Object.assign({}, config)
+	let [, destination] = locationFragments
+
+
+	locationFragments.slice(2, -1).forEach((fragment) => {
+		if (deltaObjectCursor === null) {
+			return
+		}
+
+		if (!(deltaObjectCursor instanceof Array)) {
+			deltaObjectCursor = deltaObjectCursor[fragment]
+			return
+		}
+
+		let [deltaObjectCursorItem = null, ] = deltaObjectCursor.filter(
+			(item) => item.name === fragment
+		)
+
+		if (deltaObjectCursorItem === null) {
+			deltaObjectCursor = null
+			return
+		}
+
+		deltaObjectCursor = deltaObjectCursorItem
+	})
+
+	if (deltaObjectCursor) {
+		return config
+	}
+
+	deltaObjectCursor[locationFragments[locationFragments.length - 1]] = [
+		...deltaObjectCursor[locationFragments[locationFragments.length - 1]],
+		component
+	]
+
+	return deltaObjectCursor
+}
+
 function mergeComponentConfig(config, delta) {
 	const { type, payload, } = delta
 	const { location, ...newComponent } = payload[type]
 	let deltaObject
 	if (isSubComponent(location)) {
-		const locationFragments = location.split('/').slice(1)
-		// TODO construct deltaObject from location
+		deltaObject = Object.assign({}, config)
+		const locationFragments = location.split('/')
+
+		let deltaObjectCursor = deltaObject
+		locationFragments.slice(1, -1).forEach((fragment) => {
+			if (deltaObjectCursor === null) {
+				return
+			}
+
+			if (!(deltaObjectCursor instanceof Array)) {
+				deltaObjectCursor = deltaObjectCursor[fragment]
+				return
+			}
+
+			let [deltaObjectCursorItem = null, ] = deltaObjectCursor.filter(
+				(item) => item.name === fragment
+			)
+
+			if (deltaObjectCursorItem === null) {
+				deltaObjectCursor = null
+				return
+			}
+
+			deltaObjectCursor = deltaObjectCursorItem
+		})
+
+		if (deltaObjectCursor !== null) {
+			deltaObjectCursor[locationFragments[locationFragments.length - 1]] = [
+				...deltaObjectCursor[locationFragments[locationFragments.length - 1]],
+				newComponent
+			]
+		}
 	}
-	deltaObject = {
-		components: [
-			...config.components,
-			Object.assign({}, newComponent, { subComponents: [], }),
-		],
+	if (isScopeComponent(location)) {
+		deltaObject = {
+			components: [
+				...config.components,
+				Object.assign({}, newComponent, { subComponents: [], }),
+			],
+		}
 	}
 	return deltaObject
 }

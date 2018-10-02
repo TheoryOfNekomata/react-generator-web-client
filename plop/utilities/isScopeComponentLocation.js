@@ -1,4 +1,4 @@
-function isScopeComponent(location) {
+function isScopeComponentLocation(location) {
 	const [lastFragment, ] = location
 		.split('/')
 		.reduce(
@@ -9,4 +9,4 @@ function isScopeComponent(location) {
 	return lastFragment === 'components'
 }
 
-module.exports = isScopeComponent
+module.exports = isScopeComponentLocation

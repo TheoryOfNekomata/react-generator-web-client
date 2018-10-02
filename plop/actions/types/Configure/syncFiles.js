@@ -2,14 +2,14 @@ const path = require('path')
 const fs = require('fs-extra')
 const prettier = require('prettier')
 
-const isSubComponent = require('../../../utilities/isSubComponent')
-const isScopeComponent = require('../../../utilities/isScopeComponent')
+const isSubComponentLocation = require('../../../utilities/isSubComponentLocation')
+const isScopeComponentLocation = require('../../../utilities/isScopeComponentLocation')
 
 function computeComponentDir(answers) {
 	const srcRoot = path.join(process.cwd(), 'src')
 	const { location, name, } = answers
-	const isSubcomponent = isSubComponent(location)
-	const scopeComponent = isScopeComponent(location)
+	const isSubcomponent = isSubComponentLocation(location)
+	const scopeComponent = isScopeComponentLocation(location)
 	const baseLocation = path.join(srcRoot, location)
 
 	if (isSubcomponent) {

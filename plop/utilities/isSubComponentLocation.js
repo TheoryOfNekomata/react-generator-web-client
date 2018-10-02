@@ -1,4 +1,4 @@
-function isSubComponent(location) {
+function isSubComponentLocation(location) {
 	const [, secondToLastFragment, ] = location
 		.split('/')
 		.reduce(
@@ -9,4 +9,4 @@ function isSubComponent(location) {
 	return secondToLastFragment === 'components'
 }
 
-module.exports = isSubComponent
+module.exports = isSubComponentLocation
