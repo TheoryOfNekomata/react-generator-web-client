@@ -1,20 +1,16 @@
 const fs = require('fs-extra')
-const prettier = require('prettier')
 
 const getConfigFilePath = require('../../../utilities/getConfigFilePath')
 const getSafeConfig = require('../../../utilities/getSafeConfig')
 const isSubComponent = require('../../../utilities/isSubComponentLocation')
 const isScopeComponent = require('../../../utilities/isScopeComponentLocation')
+const serializeConfig = require('../../../utilities/serializeConfig')
 
-function writeConfig(config) {
+function writeConfig(mergedConfig) {
 	const configPath = getConfigFilePath()
-	const configOutput = prettier.format(config, { filepath: configPath, })
+	const configOutput = serializeConfig(mergedConfig, configPath)
 
 	return fs.writeFile(configPath, configOutput)
-}
-
-function serializeConfig(config) {
-	return JSON.stringify(config, null, 2)
 }
 
 function isValidDelta(delta) {
@@ -143,8 +139,7 @@ function syncConfig(delta) {
 	return new Promise((resolve, reject) => {
 		getSafeConfig().then((config) => {
 			const mergedConfig = mergeConfig(config, delta)
-			const formattedConfig = serializeConfig(mergedConfig)
-			writeConfig(formattedConfig)
+			writeConfig(mergedConfig)
 				.then(
 					() => { resolve(mergedConfig) },
 					(err) => { reject(err) }

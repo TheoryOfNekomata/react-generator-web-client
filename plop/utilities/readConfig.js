@@ -1,9 +1,6 @@
 const fs = require('fs-extra')
 const getConfigFilePath = require('./getConfigFilePath')
-
-function deserializeConfig(serializedConfig) {
-	return JSON.parse(serializedConfig)
-}
+const deserializeConfig = require('./deserializeConfig')
 
 function readConfig() {
 	const configPath = getConfigFilePath()
