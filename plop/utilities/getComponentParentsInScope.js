@@ -10,12 +10,12 @@ function getComponentParentsInScope(config, scope) {
 		.map((component) => {
 			const mappedComponent = component
 
-			mappedComponent.name = `${scope}/components/${component.name}`
+			mappedComponent.name = `/components/${component.name}`
 			return mappedComponent
 		})
 
 	if (scope === 'common') {
-		const allRoutes = getAllRoutes(config, scope)
+		const allRoutes = getAllRoutes(config)
 		return [
 			...componentsWithSameScope,
 			...allRoutes,

@@ -1,12 +1,12 @@
-function AddComponent() {
+function AddModule() {
 	return [
 		{
-			type: 'configure',
+			type: 'augment',
 			action: {
-				type: 'component'
+				type: 'module'
 			},
 		},
 	]
 }
 
-module.exports = AddComponent
+module.exports = AddModule

@@ -3,19 +3,18 @@ const fs = require('fs-extra')
 const prettier = require('prettier')
 
 const isSubComponentLocation = require('../../../utilities/isSubComponentLocation')
-const isScopeComponentLocation = require('../../../utilities/isScopeComponentLocation')
 
 function computeComponentDir(answers) {
 	const srcRoot = path.join(process.cwd(), 'src')
-	const { location, name, } = answers
-	const isSubcomponent = isSubComponentLocation(location)
-	const scopeComponent = isScopeComponentLocation(location)
+	const { location, name, scope, } = answers
+	const isScopeComponent = scope !== 'common'
+	const isSubComponent = !isScopeComponent && isSubComponentLocation(location)
 	const baseLocation = path.join(srcRoot, location)
 
-	if (isSubcomponent) {
+	if (isSubComponent) {
 		return baseLocation
 	}
-	if (scopeComponent) {
+	if (isScopeComponent) {
 		return path.join(baseLocation, name)
 	}
 	const locationFragments = location.split('/')
@@ -117,7 +116,7 @@ function addRouteFile(answers, actionConfig, plop, appNode) {
 	})
 }
 
-function syncFiles(answers, actionConfig, plop, appConfig) {
+function configFileSystem(answers, actionConfig, plop, appConfig) {
 	const { action, } = actionConfig
 	const { type, } = action
 	switch (type) {
@@ -133,4 +132,4 @@ function syncFiles(answers, actionConfig, plop, appConfig) {
 	return new Promise((resolve) => { resolve() })
 }
 
-module.exports = syncFiles
+module.exports = configFileSystem

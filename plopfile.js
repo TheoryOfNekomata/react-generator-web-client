@@ -1,5 +1,3 @@
-const InquirerAutocomplete = require('inquirer-autocomplete-prompt')
-
 const HELPERS = [
 	require('./plop/helpers/componentHeader'),
 	require('./plop/helpers/componentDefaultCode'),
@@ -9,15 +7,21 @@ const HELPERS = [
 ]
 
 const ACTION_TYPES = [
-	require('./plop/actions/types/Configure'),
+	require('./plop/actions/types/Augment'),
 ]
 
 const GENERATORS = [
 	require('./plop/generators/CreateNewComponent'),
 ]
 
+const PROMPTS = {
+	'autocomplete': require('inquirer-autocomplete-prompt')
+}
+
 function plopfile(plop) {
-	plop.setPrompt('autocomplete', InquirerAutocomplete)
+	Object.keys(PROMPTS).forEach((name) => {
+		plop.setPrompt(name, PROMPTS[name])
+	})
 
 	HELPERS.forEach((Helper) => {
 		const { name, helper, } = new Helper()

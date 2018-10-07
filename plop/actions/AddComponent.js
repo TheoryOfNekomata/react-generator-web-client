@@ -1,9 +1,9 @@
 function AddComponent() {
 	return [
 		{
-			type: 'configure',
+			type: 'augment',
 			action: {
-				type: 'component'
+				focus: 'component'
 			},
 		},
 	]

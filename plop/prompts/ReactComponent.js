@@ -1,8 +1,12 @@
 const Model = require('./Model')
 const DependentReactComponentLifecycleMethod = require('./DependentReactComponentLifecycleMethod')
-const getSafeConfig = require('../utilities/getSafeConfig')
 const getValidComponentParents = require('../utilities/getValidComponentParents')
+const { getFilePath, DataSerializer, IOManager, } = require('../utilities/manifest')
 const LIFECYCLE_METHODS = require('../utilities/reactLifecycleMethods')
+
+const ioManager = new IOManager({
+	serializer: new DataSerializer({ filePath: getFilePath(), }),
+})
 
 function ReactComponent({ name, }) {
 	return [
@@ -55,14 +59,18 @@ function ReactComponent({ name, }) {
 		),
 		{
 			name: 'location',
-			type: 'autocomplete', // TODO write inquirer prompt for route based on autocomplete
+			type: 'autocomplete',
 			message: `Where should this ${name} reside?`,
+			when(answers) {
+				const { scope, } = answers
+
+				return scope === 'common'
+			},
 			source(answers, input) {
 				return new Promise((resolve) => {
-					getSafeConfig()
-						.then((config) => {
-							resolve(getValidComponentParents(answers, input, config))
-						})
+					ioManager.read().then((config) => {
+						resolve(getValidComponentParents(answers, input, config))
+					})
 				})
 			},
 		}

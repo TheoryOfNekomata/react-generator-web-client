@@ -3,7 +3,8 @@ function DependentReactComponentLifecycleMethod({ name, modelName, dependsOn, })
 		{
 			name,
 			type: 'confirm',
-			when({ methods, }) {
+			when(answers) {
+				const { methods, } = answers
 				return dependsOn.reduce((dependsOn, dependencyMethodName) => (
 					dependsOn && methods.includes(dependencyMethodName)
 				), true)
